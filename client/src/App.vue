@@ -1,46 +1,107 @@
 <template>
-  <div>
-    <main class="main">
-      <form @submit.prevent="onSubmit">
-        <input
-          type="text"
-          placeholder="Enter Anything"
-          v-model="testInput"
-        />
-        <input type="submit" value="Test Server" />
-      </form>
-      <div class="result">{{result}}</div>
-    </main>
-  </div>
+	<div>
+		<main class="main">
+			<form v-if="!authenticated">
+				<input
+					type="text"
+					placeholder="Email Address"
+					v-model="email"
+				/>
+				<input
+					type="password"
+					placeholder="Password"
+					v-model="password"
+				/>
+				<input type="submit" value="Sign Up" @click.prevent="onSignup"/>
+				<input type="submit" value="Login" @click.prevent="onLogin" />
+			</form>
+			<form @submit.prevent="onLogout" v-if="authenticated">
+				<h1>You're Logged In!</h1>
+				<br>
+				<input type="submit" value="Logout" />
+			</form>
+		</main>
+	</div>
 </template>
 
 <script lang="ts">
 	import { defineComponent, onMounted, ref } from 'vue'
-  import axios from 'axios'
+	import axios from 'axios'
+	import { useCookies } from "vue3-cookies";
 
+	axios.defaults.withCredentials = true
 	export default defineComponent({
+		setup() {
+			const { cookies } = useCookies() as any
+			return { cookies }
+		},
 		data() {
 			return {
-				testInput: "" as string,
-        result: "" as string,
+				email: "" as string,
+				password: "" as string,
+				authenticated: false as boolean,
 			}
 		},
+		computed: {
+			checkCookie() {
+				if (this.cookies.get('connect.sid')) {
+					return true
+				} else {
+					return false
+				}
+			},
+		},
 		methods: {
-			onSubmit() {
-        try {
-          axios
-          .post("/api", { text: this.testInput })
-          .then((response) => {
-            this.result = response.data.result;
-          }, (error) => {
-            throw error || new Error(`Request failed`);
-          })
-        } catch(error:any) {
-          // Consider implementing your own error handling logic here
-          console.error(error);
-          alert(error.message);
-        }
-      }
+			onSignup() {
+				try {
+				axios
+				.post("/api/signup", { 
+					email: this.email,
+					password: this.password,
+				})
+				.then((response) => {
+					this.authenticated = true
+				}, (error) => {
+					throw error || new Error(`Request failed`);
+				})
+				} catch(error:any) {
+				}
+			},
+			onLogin() {
+				try {
+				axios
+				.post("/api/login", { 
+					email: this.email,
+					password: this.password,
+				})
+				.then((response) => {
+					this.authenticated = true
+				}, (error) => {
+					throw error || new Error(`Request failed`);
+				})
+				} catch(error:any) {
+					// Consider implementing your own error handling logic here
+					alert(error.message);
+				}
+			},
+			onLogout() {
+				try {
+					axios
+					.post("/api/logout")
+					.then((response) => {
+						this.authenticated = false
+					}, (error) => {
+						throw error || new Error(`Request failed`);
+					})
+				} catch(error:any) {
+					// Consider implementing your own error handling logic here
+					console.error(error);
+					alert(error.message);
+				}
+			},
+		},
+		mounted(){
+			this.authenticated = this.checkCookie
 		}
 	});
 </script>
@@ -89,7 +150,7 @@
     flex-direction: column;
     width: 320px;
   }
-  .main input[type="text"] {
+  .main input {
     padding: 12px 16px;
     border: 1px solid #10a37f;
     border-radius: 4px;

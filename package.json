@@ -1,5 +1,5 @@
 {
-  "name": "vue3-express-mongo",
+  "name": "vue3-mevn-authentication",
   "version": "1.0.0",
   "description": "A simple starter Vue3 app using Vite, with ExpressJS and NodeJS on the backend.",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/Initial-Apps/vue3-express-mongo.git"
+    "url": "git+ssh://git@github.com/Initial-Apps/vue3-mevn-authentication.git"
   },
   "keywords": [
     "Vue3",
@@ -19,7 +19,7 @@
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Initial-Apps/vue3-express-mongo/issues"
+    "url": "https://github.com/Initial-Apps/vue3-mevn-authentication/issues"
   },
-  "homepage": "https://github.com/Initial-Apps/vue3-express-mongo#readme"
+  "homepage": "https://github.com/Initial-Apps/vue3-mevn-authentication#readme"
 }

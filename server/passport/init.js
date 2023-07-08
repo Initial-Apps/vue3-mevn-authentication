@@ -9,16 +9,15 @@ module.exports = function(passport){
 		});
 	});
 	passport.deserializeUser(function(userSession, done) {	
-		User.findById(userSession._id).
-		exec(function (err, user) {
-			if(err){
-				console.log(err);
-			}
-		    if(user){
-				console.log('deserializingUser');
-			}
-			done(err, user);
-		});
+		User.findById(userSession._id)
+		.then((user)=>{
+			console.log('deserializingUser');
+			done(null, user)
+		})
+		.catch((err)=>{
+			console.log(err);
+			done(err)
+		})
 	});
 	login(passport);
 	signup(passport);

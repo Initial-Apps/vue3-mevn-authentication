@@ -31,11 +31,11 @@ app.use(session({
 	cookie: {
     	httpOnly: false,
 		sameSite: true,
-		maxAge: 4 * 60 * 60 * 1000,
+		maxAge: 10 * 4 * 60 * 60 * 1000,
 	},
 	store: MongoStore.create({
 		mongoUrl: connectString,
-		ttl: 4 * 60 * 60, // logout after 1hr
+		ttl: 10 * 4 * 60 * 60,
 	})
 }));
 app.use(passport.initialize()); // initialize passport login sessions
@@ -44,11 +44,6 @@ app.use(passport.session()); // for persistent login sessions
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-app.post('/api', (req, res) => {
-  console.log(req.body)
-  res.status(200).json({ result: req.body.text });
-})
 
 app.post('/api/login', (req, res, next) => {
 	// general flow, 1) calls passport/login, 2) this function, 3) serializes in passport/init 4) deserializes in passport/init
@@ -63,6 +58,7 @@ app.post('/api/login', (req, res, next) => {
 		}		
 		req.logIn(user, function(err) {
 			if (err) { return next(err); } else {
+				console.log(req.session)
 				// return
 				return res.sendStatus(200);					
 			}
@@ -89,13 +85,15 @@ app.post('/api/signup', (req, res, next) => {
 });
 
 /*** LOGOUT A USER ***/
-app.post('/signout', (req, res, next) => {
+app.post('/api/logout', (req, res, next) => {
+	res.clearCookie('connect.sid'); 
 	req.logout(function(err) {
-		if (err) { console.log(err) }
+		console.log('logged out');
+		console.log(err)
+		req.session.destroy(function (err) {
+			res.send();
+		});
 	});
-	res.clearCookie('connect.sid');
-	res.send('logout');
-	console.log('logged out');
 });
 
 app.listen(port, () => {

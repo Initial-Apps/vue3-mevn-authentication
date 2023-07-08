@@ -12,12 +12,8 @@ module.exports = function(passport){
 	function(req, username, password, done) {
 		findOrCreateUser = function(){
 			// find a user in Mongo with provided username
-			User.findOne({ 'email' :  username }, function(err, user) {
-				// In case of any error, return using the done method
-				if (err){
-					console.log('Error in SignUp: '+err);
-					return done(err);
-				}
+			User.findOne({ 'email' :  username })
+			.then((user)=>{
 				// If already exists
 				if (user) {
 					console.log('User already exists with email: '+username);
@@ -28,20 +24,26 @@ module.exports = function(passport){
 					// If there is no user with that email
 					// create the user
 					let newUser = new User({
-						_id: new mongoose.Types.ObjectId(),
 						email: username,
 						password: hash,
 					});	
 					// save the user
-					newUser.save(function(err){
+					newUser.save()
+					.then((user)=> {
+						console.log('User Registration succesful');
+						return done(null, newUser);						
+					})
+					.catch((err)=>{
 						if (err){
 							console.log('Error in Saving user: '+err);
 							throw err;
 						}
-						console.log('User Registration succesful');
-						return done(null, newAccount);
 					});
 				}
+			})
+			.catch((err)=>{
+				console.log('Error in SignUp: '+err);
+				return done(err);
 			});
 		};
 		// Delay the execution of findOrCreateUser and execute the method

@@ -9,8 +9,11 @@ module.exports = function(passport){
 	},
 	function(req, username, password, done) {
 		username = username.toLowerCase(); // clear caps
-		User.findOne({email: username}, function(err, user){
-			if(err) return done(err);
+		User.findOne({email: username})
+		.catch((err) => {
+			return done(err);
+		})
+		.then ((user) => {
 			if(!user) {
 				console.log('User Not Found with username '+username);
 				return done(null, false, 'Invalid Username');
